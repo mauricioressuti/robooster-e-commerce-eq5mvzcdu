@@ -7,7 +7,17 @@ import { formatCurrency } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { CheckCircle2, ChevronRight, Building, MapPin, CreditCard } from 'lucide-react'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import {
+  CheckCircle2,
+  ChevronRight,
+  Building,
+  MapPin,
+  CreditCard,
+  Truck,
+  MessageCircle,
+} from 'lucide-react'
+import { CheckoutSummary } from '@/components/checkout-summary'
 
 export default function Checkout() {
   const { cart, cartTotal, currency, clearCart } = useAppStore()
@@ -15,6 +25,9 @@ export default function Checkout() {
   const navigate = useNavigate()
   const [step, setStep] = useState(1)
   const [isProcessing, setIsProcessing] = useState(false)
+  const [shippingCost, setShippingCost] = useState(1500)
+  const [discount, setDiscount] = useState(0)
+
   const [formData, setFormData] = useState({
     cnpj: '',
     company_name: '',
@@ -22,11 +35,22 @@ export default function Checkout() {
     phone: '',
     cep: '',
     address: '',
+    shipping_method: 'transportadora',
     payment_method: 'credito',
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+  }
+
+  const handleShippingChange = (val: string) => {
+    setFormData((prev) => ({ ...prev, shipping_method: val }))
+    setShippingCost(val === 'transportadora' ? 1500 : 0)
+  }
+
+  const handleApplyCoupon = (coupon: string) => {
+    if (coupon.toUpperCase() === 'ROBOOSTER10') setDiscount(cartTotal * 0.1)
+    else setDiscount(0)
   }
 
   if (cart.length === 0 && step !== 4) {
@@ -43,6 +67,7 @@ export default function Checkout() {
   const handleComplete = async () => {
     setIsProcessing(true)
     try {
+      const finalTotal = cartTotal + shippingCost - discount
       await submitLead(
         {
           user_id: user?.id,
@@ -53,8 +78,8 @@ export default function Checkout() {
           cep: formData.cep,
           address: formData.address,
           payment_method: formData.payment_method,
-          total_brl: cartTotal,
-          total_usd: currency === 'USD' ? cartTotal : cartTotal / 5.0, // simple mock conv
+          total_brl: finalTotal,
+          total_usd: currency === 'USD' ? finalTotal : finalTotal / 5.0,
         },
         cart,
       )
@@ -74,52 +99,37 @@ export default function Checkout() {
 
         {step < 4 && (
           <div className="flex items-center gap-4 mb-8 overflow-x-auto pb-4 text-sm font-medium">
-            <span
-              className={`flex items-center gap-2 ${step >= 1 ? 'text-primary' : 'text-muted-foreground'}`}
-            >
+            {[1, 2, 3].map((s) => (
               <span
-                className={`w-6 h-6 rounded-full flex items-center justify-center text-xs text-white ${step >= 1 ? 'bg-primary' : 'bg-muted'}`}
+                key={s}
+                className={`flex items-center gap-2 ${
+                  step >= s ? 'text-primary' : 'text-muted-foreground'
+                }`}
               >
-                1
-              </span>{' '}
-              Identificação
-            </span>
-            <ChevronRight className="h-4 w-4 text-muted-foreground" />
-            <span
-              className={`flex items-center gap-2 ${step >= 2 ? 'text-primary' : 'text-muted-foreground'}`}
-            >
-              <span
-                className={`w-6 h-6 rounded-full flex items-center justify-center text-xs text-white ${step >= 2 ? 'bg-primary' : 'bg-muted'}`}
-              >
-                2
-              </span>{' '}
-              Entrega
-            </span>
-            <ChevronRight className="h-4 w-4 text-muted-foreground" />
-            <span
-              className={`flex items-center gap-2 ${step >= 3 ? 'text-primary' : 'text-muted-foreground'}`}
-            >
-              <span
-                className={`w-6 h-6 rounded-full flex items-center justify-center text-xs text-white ${step >= 3 ? 'bg-primary' : 'bg-muted'}`}
-              >
-                3
-              </span>{' '}
-              Pagamento
-            </span>
+                <span
+                  className={`w-6 h-6 rounded-full flex items-center justify-center text-xs text-white ${
+                    step >= s ? 'bg-primary' : 'bg-muted'
+                  }`}
+                >
+                  {s}
+                </span>
+                {s === 1 ? 'Identificação' : s === 2 ? 'Entrega' : 'Pagamento'}
+                {s < 3 && <ChevronRight className="h-4 w-4 ml-2" />}
+              </span>
+            ))}
           </div>
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
-            {/* Step 1 */}
             {step === 1 && (
               <div className="bg-card border rounded-xl p-6 animate-fade-in-up">
                 <h2 className="text-xl font-bold flex items-center gap-2 mb-6">
                   <Building className="h-5 w-5" /> Dados da Empresa
                 </h2>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="col-span-2">
-                    <Label>CNPJ</Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="md:col-span-2">
+                    <Label>CPF / CNPJ *</Label>
                     <Input
                       name="cnpj"
                       value={formData.cnpj}
@@ -127,27 +137,27 @@ export default function Checkout() {
                       placeholder="00.000.000/0000-00"
                     />
                   </div>
-                  <div className="col-span-2">
-                    <Label>Razão Social</Label>
+                  <div className="md:col-span-2">
+                    <Label>Nome / Razão Social *</Label>
                     <Input
                       name="company_name"
                       value={formData.company_name}
                       onChange={handleChange}
-                      placeholder="Indústria de Exemplo S.A."
+                      placeholder="Sua Empresa Ltda"
                     />
                   </div>
                   <div>
-                    <Label>E-mail do Comprador</Label>
+                    <Label>E-mail do Comprador *</Label>
                     <Input
                       name="email"
                       type="email"
                       value={formData.email}
                       onChange={handleChange}
-                      placeholder="compras@exemplo.com.br"
+                      placeholder="compras@empresa.com.br"
                     />
                   </div>
                   <div>
-                    <Label>Telefone / WhatsApp</Label>
+                    <Label>Telefone / WhatsApp *</Label>
                     <Input
                       name="phone"
                       value={formData.phone}
@@ -156,21 +166,26 @@ export default function Checkout() {
                     />
                   </div>
                 </div>
-                <Button className="mt-8 w-full" onClick={() => setStep(2)}>
+                <Button
+                  className="mt-8 w-full"
+                  onClick={() => setStep(2)}
+                  disabled={
+                    formData.cnpj.length < 11 || formData.company_name.length < 3 || !formData.email
+                  }
+                >
                   Continuar para Entrega
                 </Button>
               </div>
             )}
 
-            {/* Step 2 */}
             {step === 2 && (
               <div className="bg-card border rounded-xl p-6 animate-fade-in-up">
                 <h2 className="text-xl font-bold flex items-center gap-2 mb-6">
-                  <MapPin className="h-5 w-5" /> Logística Industrial
+                  <MapPin className="h-5 w-5" /> Logística e Entrega
                 </h2>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="col-span-2">
-                    <Label>CEP</Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                  <div className="md:col-span-2">
+                    <Label>CEP *</Label>
                     <Input
                       name="cep"
                       value={formData.cep}
@@ -178,69 +193,108 @@ export default function Checkout() {
                       placeholder="00000-000"
                     />
                   </div>
-                  <div className="col-span-2">
-                    <Label>Endereço de Descarregamento</Label>
+                  <div className="md:col-span-2">
+                    <Label>Endereço Completo de Descarregamento *</Label>
                     <Input
                       name="address"
                       value={formData.address}
                       onChange={handleChange}
-                      placeholder="Rodovia BR-101, Km 45"
+                      placeholder="Rua, Número, Bairro, Cidade - UF"
                     />
                   </div>
-                  <div className="col-span-2 p-4 bg-amber-50 text-amber-900 border border-amber-200 rounded-md text-sm mt-4">
-                    <strong>Atenção:</strong> Por se tratar de maquinário pesado (acima de 500kg), é
-                    necessário que o local possua doca ou empilhadeira para descarga.
-                  </div>
                 </div>
+
+                <h3 className="font-semibold mb-4 flex items-center gap-2">
+                  <Truck className="h-4 w-4" /> Opções de Envio
+                </h3>
+                <RadioGroup
+                  value={formData.shipping_method}
+                  onValueChange={handleShippingChange}
+                  className="space-y-3"
+                >
+                  <label className="flex items-center justify-between p-4 border rounded-lg cursor-pointer hover:bg-muted/50 data-[state=checked]:border-primary">
+                    <div className="flex items-center gap-3">
+                      <RadioGroupItem value="transportadora" id="transportadora" />
+                      <div>
+                        <p className="font-medium">Transportadora Especializada</p>
+                        <p className="text-sm text-muted-foreground">
+                          7 a 14 dias úteis (Seguro incluso)
+                        </p>
+                      </div>
+                    </div>
+                    <span className="font-semibold">{formatCurrency(1500, currency)}</span>
+                  </label>
+                  <label className="flex items-center justify-between p-4 border rounded-lg cursor-pointer hover:bg-muted/50 data-[state=checked]:border-primary">
+                    <div className="flex items-center gap-3">
+                      <RadioGroupItem value="retirada" id="retirada" />
+                      <div>
+                        <p className="font-medium">Retirada na Fábrica</p>
+                        <p className="text-sm text-muted-foreground">Disponível em 3 dias úteis</p>
+                      </div>
+                    </div>
+                    <span className="font-semibold text-green-600">Grátis</span>
+                  </label>
+                </RadioGroup>
+
                 <div className="flex gap-4 mt-8">
                   <Button variant="outline" onClick={() => setStep(1)}>
                     Voltar
                   </Button>
-                  <Button className="flex-1" onClick={() => setStep(3)}>
+                  <Button
+                    className="flex-1"
+                    onClick={() => setStep(3)}
+                    disabled={formData.cep.length < 8 || formData.address.length < 5}
+                  >
                     Continuar para Pagamento
                   </Button>
                 </div>
               </div>
             )}
 
-            {/* Step 3 */}
             {step === 3 && (
               <div className="bg-card border rounded-xl p-6 animate-fade-in-up">
                 <h2 className="text-xl font-bold flex items-center gap-2 mb-6">
                   <CreditCard className="h-5 w-5" /> Pagamento
                 </h2>
-                <div className="space-y-4 mb-8">
-                  <label className="flex items-start gap-4 p-4 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
-                    <input
-                      type="radio"
-                      name="payment"
-                      value="credito"
-                      checked={formData.payment_method === 'credito'}
-                      onChange={handleChange}
-                      className="mt-1"
-                    />
-                    <div>
-                      <p className="font-semibold">Cartão de Crédito (PagSeguro)</p>
-                      <p className="text-sm text-muted-foreground">Parcele em até 12x sem juros</p>
-                    </div>
-                  </label>
-                  <label className="flex items-start gap-4 p-4 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
-                    <input
-                      type="radio"
-                      name="payment"
-                      value="bndes"
-                      checked={formData.payment_method === 'bndes'}
-                      onChange={handleChange}
-                      className="mt-1"
-                    />
-                    <div>
-                      <p className="font-semibold">BNDES / Finame</p>
-                      <p className="text-sm text-muted-foreground">
-                        Financiamento especial para indústria
-                      </p>
-                    </div>
-                  </label>
-                </div>
+                <RadioGroup
+                  value={formData.payment_method}
+                  onValueChange={(val) => setFormData((p) => ({ ...p, payment_method: val }))}
+                  className="space-y-4 mb-8"
+                >
+                  {[
+                    {
+                      id: 'credito',
+                      title: 'Cartão de Crédito',
+                      desc: 'Até 12x sem juros (Processado via Stripe)',
+                    },
+                    {
+                      id: 'pix',
+                      title: 'Pix',
+                      desc: '5% de desconto extra na aprovação',
+                    },
+                    {
+                      id: 'boleto',
+                      title: 'Boleto Bancário Faturado',
+                      desc: 'Para empresas aprovadas (30/60/90 dias)',
+                    },
+                    {
+                      id: 'bndes',
+                      title: 'Financiamento BNDES / Finame',
+                      desc: 'Taxas reduzidas para indústria nacional',
+                    },
+                  ].map((opt) => (
+                    <label
+                      key={opt.id}
+                      className="flex items-start gap-4 p-4 border rounded-lg cursor-pointer hover:bg-muted/50 data-[state=checked]:border-primary data-[state=checked]:bg-primary/5"
+                    >
+                      <RadioGroupItem value={opt.id} id={opt.id} className="mt-1" />
+                      <div>
+                        <p className="font-semibold">{opt.title}</p>
+                        <p className="text-sm text-muted-foreground">{opt.desc}</p>
+                      </div>
+                    </label>
+                  ))}
+                </RadioGroup>
                 <div className="flex gap-4 mt-8">
                   <Button variant="outline" onClick={() => setStep(2)}>
                     Voltar
@@ -250,69 +304,52 @@ export default function Checkout() {
                     onClick={handleComplete}
                     disabled={isProcessing}
                   >
-                    {isProcessing ? 'Processando...' : 'Confirmar Pedido'}
+                    {isProcessing ? 'Processando...' : 'Confirmar Pedido Seguro'}
                   </Button>
                 </div>
               </div>
             )}
 
-            {/* Step 4 - Success */}
             {step === 4 && (
-              <div className="bg-card border border-green-200 rounded-xl p-12 text-center animate-fade-in-up">
+              <div className="bg-card border border-green-200 rounded-xl p-8 md:p-12 text-center animate-fade-in-up">
                 <CheckCircle2 className="h-20 w-20 text-green-500 mx-auto mb-6" />
-                <h2 className="text-3xl font-bold text-primary mb-4">Pedido Confirmado!</h2>
+                <h2 className="text-2xl md:text-3xl font-bold text-primary mb-4">
+                  Pedido Confirmado!
+                </h2>
                 <p className="text-muted-foreground text-lg mb-8 max-w-md mx-auto">
-                  Sua requisição de compra foi recebida. Um de nossos especialistas entrará em
-                  contato em até 2 horas para validação logística.
+                  Sua requisição foi recebida com sucesso. Um especialista técnico entrará em
+                  contato em até 2 horas para validação logística e aprovação do faturamento.
                 </p>
-                <div className="text-left bg-muted/30 p-6 rounded-lg max-w-sm mx-auto mb-8 font-mono text-sm">
+                <div className="text-left bg-muted/30 p-6 rounded-lg max-w-sm mx-auto mb-8 text-sm space-y-2">
                   <p>
-                    <strong>Nº do Pedido:</strong> RBT-{Math.floor(Math.random() * 100000)}
+                    <strong>Nº do Pedido:</strong> RBT-
+                    {Math.floor(Math.random() * 100000)}
                   </p>
                   <p>
-                    <strong>Status:</strong> Aguardando Análise Comercial
+                    <strong>Status:</strong> Em Análise Comercial
+                  </p>
+                  <p>
+                    <strong>E-mail de confirmação:</strong> Enviado para {formData.email}
                   </p>
                 </div>
-                <Button onClick={() => navigate('/')}>Voltar ao Início</Button>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Button variant="outline" onClick={() => navigate('/')}>
+                    Voltar ao Início
+                  </Button>
+                  <Button className="bg-green-600 hover:bg-green-700 text-white gap-2">
+                    <MessageCircle className="h-4 w-4" /> Acompanhar via WhatsApp
+                  </Button>
+                </div>
               </div>
             )}
           </div>
 
-          {/* Order Summary Sidebar */}
           {step < 4 && (
-            <div className="bg-card border rounded-xl p-6 h-fit sticky top-28">
-              <h3 className="font-bold text-lg mb-4 border-b pb-4">Resumo do Pedido</h3>
-              <div className="space-y-4 mb-6 max-h-[300px] overflow-y-auto pr-2">
-                {cart.map((item) => (
-                  <div key={item.product.id} className="flex justify-between text-sm">
-                    <span className="text-muted-foreground pr-4">
-                      {item.quantity}x {item.product.name}
-                    </span>
-                    <span className="font-medium whitespace-nowrap">
-                      {formatCurrency(
-                        (currency === 'BRL' ? item.product.priceBRL : item.product.priceUSD) *
-                          item.quantity,
-                        currency,
-                      )}
-                    </span>
-                  </div>
-                ))}
-              </div>
-              <div className="border-t pt-4 space-y-2">
-                <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>Subtotal</span>
-                  <span>{formatCurrency(cartTotal, currency)}</span>
-                </div>
-                <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>Frete (Estimativa)</span>
-                  <span>A calcular</span>
-                </div>
-                <div className="flex justify-between text-xl font-bold pt-4 text-primary">
-                  <span>Total</span>
-                  <span>{formatCurrency(cartTotal, currency)}</span>
-                </div>
-              </div>
-            </div>
+            <CheckoutSummary
+              shippingCost={shippingCost}
+              discount={discount}
+              onApplyCoupon={handleApplyCoupon}
+            />
           )}
         </div>
       </div>
