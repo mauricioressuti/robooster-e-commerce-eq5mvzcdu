@@ -1,6 +1,6 @@
 import { useParams, Navigate } from 'react-router-dom'
 import { useState } from 'react'
-import { MOCK_PRODUCTS } from '@/lib/data'
+import { useCatalog } from '@/hooks/use-catalog'
 import { useAppStore } from '@/hooks/use-app-store'
 import { formatCurrency, formatInstallments } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -11,10 +11,16 @@ import { Input } from '@/components/ui/input'
 export default function ProductDetail() {
   const { id } = useParams()
   const { currency, addToCart } = useAppStore()
+  const { products, loading } = useCatalog()
   const [cep, setCep] = useState('')
   const [shippingResult, setShippingResult] = useState<string | null>(null)
 
-  const product = MOCK_PRODUCTS.find((p) => p.id === id)
+  if (loading)
+    return (
+      <div className="py-32 text-center text-lg text-muted-foreground">Carregando detalhes...</div>
+    )
+
+  const product = products.find((p) => p.id === id)
 
   if (!product) return <Navigate to="/404" />
 

@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { MOCK_PRODUCTS, CATEGORIES } from '@/lib/data'
+import { useCatalog } from '@/hooks/use-catalog'
 import { ProductCard } from '@/components/product-card'
 import {
   Select,
@@ -15,13 +15,14 @@ import { Label } from '@/components/ui/label'
 export default function Catalog() {
   const [searchParams] = useSearchParams()
   const initialCategory = searchParams.get('cat') || 'all'
+  const { products, categories, loading } = useCatalog()
 
   const [selectedCategory, setSelectedCategory] = useState(initialCategory)
   const [inStockOnly, setInStockOnly] = useState(false)
   const [sortBy, setSortBy] = useState('popular')
 
   const filteredProducts = useMemo(() => {
-    let result = [...MOCK_PRODUCTS]
+    let result = [...products]
 
     if (selectedCategory !== 'all') {
       result = result.filter((p) => p.category === selectedCategory)
@@ -68,14 +69,14 @@ export default function Catalog() {
                   Todas as Máquinas
                 </Label>
               </div>
-              {CATEGORIES.map((cat) => (
+              {categories.map((cat) => (
                 <div key={cat.id} className="flex items-center space-x-2">
                   <Checkbox
-                    id={`cat-${cat.id}`}
-                    checked={selectedCategory === cat.id}
-                    onCheckedChange={() => setSelectedCategory(cat.id)}
+                    id={`cat-${cat.slug}`}
+                    checked={selectedCategory === cat.slug}
+                    onCheckedChange={() => setSelectedCategory(cat.slug)}
                   />
-                  <Label htmlFor={`cat-${cat.id}`} className="cursor-pointer">
+                  <Label htmlFor={`cat-${cat.slug}`} className="cursor-pointer">
                     {cat.name}
                   </Label>
                 </div>
@@ -119,7 +120,9 @@ export default function Catalog() {
             </div>
           </div>
 
-          {filteredProducts.length === 0 ? (
+          {loading ? (
+            <div className="text-center py-20 text-muted-foreground">Carregando produtos...</div>
+          ) : filteredProducts.length === 0 ? (
             <div className="text-center py-20 bg-muted/30 rounded-lg border border-dashed">
               <p className="text-muted-foreground text-lg">
                 Nenhuma máquina encontrada com estes filtros.

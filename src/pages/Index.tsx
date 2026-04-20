@@ -1,11 +1,18 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight, ShieldCheck, Cog, Truck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { CATEGORIES, MOCK_PRODUCTS } from '@/lib/data'
+import { useCatalog } from '@/hooks/use-catalog'
 import { ProductCard } from '@/components/product-card'
 
 export default function Index() {
-  const featuredProducts = MOCK_PRODUCTS.filter((p) => p.featured).slice(0, 4)
+  const { products, categories, loading } = useCatalog()
+
+  const featuredProducts = products.filter((p) => p.featured).slice(0, 4)
+
+  if (loading)
+    return (
+      <div className="py-32 text-center text-lg text-muted-foreground">Carregando catálogo...</div>
+    )
 
   return (
     <div className="flex flex-col w-full">
@@ -93,10 +100,10 @@ export default function Index() {
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {CATEGORIES.map((cat, i) => (
+          {categories.map((cat, i) => (
             <Link
               key={cat.id}
-              to={`/catalogo?cat=${cat.id}`}
+              to={`/catalogo?cat=${cat.slug}`}
               className={`group relative overflow-hidden rounded-xl aspect-[4/3] ${i === 0 ? 'md:col-span-2 lg:col-span-2 aspect-[21/9] md:aspect-auto' : ''}`}
             >
               <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors z-10" />

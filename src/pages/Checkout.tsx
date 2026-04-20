@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAppStore } from '@/hooks/use-app-store'
+import { useAuth } from '@/hooks/use-auth'
+import { submitLead } from '@/services/catalog'
 import { formatCurrency } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -9,9 +11,23 @@ import { CheckCircle2, ChevronRight, Building, MapPin, CreditCard } from 'lucide
 
 export default function Checkout() {
   const { cart, cartTotal, currency, clearCart } = useAppStore()
+  const { user } = useAuth()
   const navigate = useNavigate()
   const [step, setStep] = useState(1)
   const [isProcessing, setIsProcessing] = useState(false)
+  const [formData, setFormData] = useState({
+    cnpj: '',
+    company_name: '',
+    email: user?.email || '',
+    phone: '',
+    cep: '',
+    address: '',
+    payment_method: 'credito',
+  })
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+  }
 
   if (cart.length === 0 && step !== 4) {
     return (
@@ -24,13 +40,31 @@ export default function Checkout() {
     )
   }
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
     setIsProcessing(true)
-    setTimeout(() => {
-      setIsProcessing(false)
+    try {
+      await submitLead(
+        {
+          user_id: user?.id,
+          cnpj: formData.cnpj,
+          company_name: formData.company_name,
+          email: formData.email,
+          phone: formData.phone,
+          cep: formData.cep,
+          address: formData.address,
+          payment_method: formData.payment_method,
+          total_brl: cartTotal,
+          total_usd: currency === 'USD' ? cartTotal : cartTotal / 5.0, // simple mock conv
+        },
+        cart,
+      )
       clearCart()
       setStep(4)
-    }, 2000)
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setIsProcessing(false)
+    }
   }
 
   return (
@@ -86,19 +120,40 @@ export default function Checkout() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="col-span-2">
                     <Label>CNPJ</Label>
-                    <Input placeholder="00.000.000/0000-00" />
+                    <Input
+                      name="cnpj"
+                      value={formData.cnpj}
+                      onChange={handleChange}
+                      placeholder="00.000.000/0000-00"
+                    />
                   </div>
                   <div className="col-span-2">
                     <Label>Razão Social</Label>
-                    <Input placeholder="Indústria de Exemplo S.A." />
+                    <Input
+                      name="company_name"
+                      value={formData.company_name}
+                      onChange={handleChange}
+                      placeholder="Indústria de Exemplo S.A."
+                    />
                   </div>
                   <div>
                     <Label>E-mail do Comprador</Label>
-                    <Input type="email" placeholder="compras@exemplo.com.br" />
+                    <Input
+                      name="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="compras@exemplo.com.br"
+                    />
                   </div>
                   <div>
                     <Label>Telefone / WhatsApp</Label>
-                    <Input placeholder="(00) 00000-0000" />
+                    <Input
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="(00) 00000-0000"
+                    />
                   </div>
                 </div>
                 <Button className="mt-8 w-full" onClick={() => setStep(2)}>
@@ -116,11 +171,21 @@ export default function Checkout() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="col-span-2">
                     <Label>CEP</Label>
-                    <Input placeholder="00000-000" />
+                    <Input
+                      name="cep"
+                      value={formData.cep}
+                      onChange={handleChange}
+                      placeholder="00000-000"
+                    />
                   </div>
                   <div className="col-span-2">
                     <Label>Endereço de Descarregamento</Label>
-                    <Input placeholder="Rodovia BR-101, Km 45" />
+                    <Input
+                      name="address"
+                      value={formData.address}
+                      onChange={handleChange}
+                      placeholder="Rodovia BR-101, Km 45"
+                    />
                   </div>
                   <div className="col-span-2 p-4 bg-amber-50 text-amber-900 border border-amber-200 rounded-md text-sm mt-4">
                     <strong>Atenção:</strong> Por se tratar de maquinário pesado (acima de 500kg), é
@@ -146,14 +211,28 @@ export default function Checkout() {
                 </h2>
                 <div className="space-y-4 mb-8">
                   <label className="flex items-start gap-4 p-4 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
-                    <input type="radio" name="payment" className="mt-1" defaultChecked />
+                    <input
+                      type="radio"
+                      name="payment"
+                      value="credito"
+                      checked={formData.payment_method === 'credito'}
+                      onChange={handleChange}
+                      className="mt-1"
+                    />
                     <div>
                       <p className="font-semibold">Cartão de Crédito (PagSeguro)</p>
                       <p className="text-sm text-muted-foreground">Parcele em até 12x sem juros</p>
                     </div>
                   </label>
                   <label className="flex items-start gap-4 p-4 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
-                    <input type="radio" name="payment" className="mt-1" />
+                    <input
+                      type="radio"
+                      name="payment"
+                      value="bndes"
+                      checked={formData.payment_method === 'bndes'}
+                      onChange={handleChange}
+                      className="mt-1"
+                    />
                     <div>
                       <p className="font-semibold">BNDES / Finame</p>
                       <p className="text-sm text-muted-foreground">
