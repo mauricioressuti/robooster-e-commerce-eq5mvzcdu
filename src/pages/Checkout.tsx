@@ -95,7 +95,13 @@ export default function Checkout() {
   return (
     <div className="bg-muted/10 min-h-screen py-12">
       <div className="container mx-auto px-4 max-w-6xl">
-        <h1 className="text-3xl font-bold tracking-tight mb-8">Finalizar Compra B2B</h1>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold tracking-tight mb-2">Finalizar Pedido Seguro</h1>
+          <p className="text-muted-foreground">
+            Ambiente criptografado. Um especialista validará as especificações antes do faturamento
+            final.
+          </p>
+        </div>
 
         {step < 4 && (
           <div className="flex items-center gap-4 mb-8 overflow-x-auto pb-4 text-sm font-medium">
@@ -241,7 +247,7 @@ export default function Checkout() {
                     Voltar
                   </Button>
                   <Button
-                    className="flex-1"
+                    className="flex-1 bg-primary text-white"
                     onClick={() => setStep(3)}
                     disabled={formData.cep.length < 8 || formData.address.length < 5}
                   >

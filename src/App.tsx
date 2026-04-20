@@ -12,6 +12,9 @@ import Catalog from './pages/Catalog'
 import ProductDetail from './pages/ProductDetail'
 import Checkout from './pages/Checkout'
 import NotFound from './pages/NotFound'
+import SuccessCases from './pages/SuccessCases'
+import Blog from './pages/Blog'
+import Contact from './pages/Contact'
 
 const AppLayout = () => {
   const { user, loading } = useAuth()
@@ -40,6 +43,18 @@ const router = createBrowserRouter([
       {
         path: '/checkout',
         element: <Checkout />,
+      },
+      {
+        path: '/casos-de-sucesso',
+        element: <SuccessCases />,
+      },
+      {
+        path: '/blog',
+        element: <Blog />,
+      },
+      {
+        path: '/contato',
+        element: <Contact />,
       },
     ],
   },

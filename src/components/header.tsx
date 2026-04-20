@@ -7,10 +7,9 @@ import { CartDrawer } from './cart-drawer'
 import { useAppStore } from '@/hooks/use-app-store'
 
 const NAV_LINKS = [
-  { name: 'Catálogo Completo', path: '/catalogo' },
-  { name: 'CNC Routers', path: '/catalogo?cat=cnc' },
-  { name: 'Coladeiras', path: '/catalogo?cat=edgebander' },
-  { name: 'Serras', path: '/catalogo?cat=saw' },
+  { name: 'Catálogo de Máquinas', path: '/catalogo' },
+  { name: 'Casos de Sucesso', path: '/casos-de-sucesso' },
+  { name: 'Blog Industrial', path: '/blog' },
 ]
 
 export function Header() {

@@ -95,11 +95,32 @@ export function CartDrawer() {
         </div>
 
         {cart.length > 0 && (
-          <div className="border-t pt-6 space-y-4 mt-auto">
-            <div className="flex justify-between items-center font-semibold text-lg">
-              <span>Total</span>
-              <span>{formatCurrency(cartTotal, currency)}</span>
+          <div className="border-t pt-6 space-y-4 mt-auto bg-background">
+            <div className="bg-green-50 text-green-800 text-xs px-3 py-2 rounded flex items-center gap-2 border border-green-100 mb-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="lucide lucide-shield-check"
+              >
+                <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1z" />
+                <path d="m9 12 2 2 4-4" />
+              </svg>
+              Sua compra está segura. Faturamento sujeito a análise de crédito.
             </div>
+            <div className="flex justify-between items-center font-semibold text-xl">
+              <span>Total Estimado</span>
+              <span className="text-primary">{formatCurrency(cartTotal, currency)}</span>
+            </div>
+            <p className="text-xs text-muted-foreground text-right">
+              * Frete e impostos calculados na próxima etapa.
+            </p>
             <div className="grid grid-cols-2 gap-4">
               <SheetTrigger asChild>
                 <Button variant="outline" className="w-full">

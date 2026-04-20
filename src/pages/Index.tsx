@@ -1,143 +1,151 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight, ShieldCheck, Cog, Truck } from 'lucide-react'
+import {
+  ArrowRight,
+  ShieldCheck,
+  Factory,
+  TrendingUp,
+  MessageCircle,
+  Play,
+  CheckCircle2,
+  Wrench,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useCatalog } from '@/hooks/use-catalog'
 import { ProductCard } from '@/components/product-card'
 
 export default function Index() {
-  const { products, categories, loading } = useCatalog()
+  const { products, loading } = useCatalog()
 
   const featuredProducts = products.filter((p) => p.featured).slice(0, 4)
 
   if (loading)
     return (
-      <div className="py-32 text-center text-lg text-muted-foreground">Carregando catálogo...</div>
+      <div className="py-32 text-center text-lg text-muted-foreground">Carregando soluções...</div>
     )
 
   return (
     <div className="flex flex-col w-full">
-      {/* Hero Section */}
-      <section className="relative h-[80vh] min-h-[600px] flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-primary/90 z-10" />
-        <img
-          src="https://img.usecurling.com/p/1920/1080?q=industrial+factory+machines"
-          alt="Factory"
-          className="absolute inset-0 w-full h-full object-cover mix-blend-overlay"
-        />
-        <div className="container relative z-20 px-4 text-center text-white animate-fade-in-up">
-          <Badge
-            variant="outline"
-            className="text-accent border-accent mb-6 px-4 py-1 text-sm bg-accent/10"
-          >
-            B2B Machinery
-          </Badge>
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tighter mb-6 max-w-4xl mx-auto leading-tight">
-            Potência Industrial para o seu Negócio
-          </h1>
-          <p className="text-lg md:text-xl text-white/80 mb-10 max-w-2xl mx-auto">
-            Equipamentos de alta performance, suporte técnico especializado e soluções de
-            financiamento B2B para elevar a produtividade da sua fábrica.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/catalogo">
-              <Button
-                size="lg"
-                className="bg-accent text-white hover:bg-accent/90 h-14 px-8 text-lg w-full sm:w-auto"
-              >
-                Ver Catálogo Completo
-              </Button>
-            </Link>
-            <Link to="/contato">
-              <Button
-                size="lg"
-                variant="outline"
-                className="h-14 px-8 text-lg text-primary hover:text-primary w-full sm:w-auto bg-white hover:bg-white/90"
-              >
-                Falar com Especialista
-              </Button>
-            </Link>
-          </div>
+      {/* Pragmatic Hero Section */}
+      <section className="relative bg-primary pt-24 pb-32 overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <img
+            src="https://img.usecurling.com/p/1920/1080?q=industrial+cnc+machine+working"
+            alt="Factory"
+            className="w-full h-full object-cover opacity-20"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/90 to-transparent" />
         </div>
-      </section>
-
-      {/* Trust Badges */}
-      <section className="border-b bg-muted/30">
-        <div className="container mx-auto px-4 py-10">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-border">
-            <div className="flex flex-col items-center gap-3 pt-4 md:pt-0">
-              <ShieldCheck className="h-10 w-10 text-accent" />
-              <h3 className="font-semibold text-lg">Garantia Estendida</h3>
-              <p className="text-muted-foreground text-sm max-w-xs mx-auto">
-                Até 2 anos de proteção total contra defeitos de fabricação.
-              </p>
+        <div className="container relative z-10 px-4 animate-fade-in-up">
+          <div className="max-w-3xl">
+            <span className="inline-flex items-center rounded-full bg-accent/20 text-accent px-3 py-1 text-sm font-semibold mb-6 border border-accent/30">
+              Soluções Industriais B2B
+            </span>
+            <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white mb-6 leading-tight">
+              Aumente sua Produção em até 40% com Máquinas de Alta Precisão
+            </h1>
+            <p className="text-lg md:text-xl text-white/80 mb-10 leading-relaxed">
+              Equipamentos robustos para acabar com os gargalos da sua marcenaria. Reduza o
+              desperdício de material, diminua a dependência de mão de obra e recupere seu
+              investimento em meses.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              <Link to="/catalogo" className="w-full sm:w-auto">
+                <Button
+                  size="lg"
+                  className="bg-accent text-primary hover:bg-accent/90 h-14 px-8 text-lg w-full font-bold shadow-lg"
+                >
+                  Ver Catálogo de Máquinas
+                </Button>
+              </Link>
+              <a
+                href="https://wa.me/5511999999999"
+                target="_blank"
+                rel="noreferrer"
+                className="w-full sm:w-auto"
+              >
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="h-14 px-8 text-lg text-white border-white/30 hover:bg-white/10 w-full flex items-center gap-2"
+                >
+                  <MessageCircle className="h-5 w-5" /> Falar com Consultor
+                </Button>
+              </a>
             </div>
-            <div className="flex flex-col items-center gap-3 pt-4 md:pt-0">
-              <Cog className="h-10 w-10 text-accent" />
-              <h3 className="font-semibold text-lg">Instalação Técnica</h3>
-              <p className="text-muted-foreground text-sm max-w-xs mx-auto">
-                Equipe especializada para setup e treinamento na sua planta.
-              </p>
-            </div>
-            <div className="flex flex-col items-center gap-3 pt-4 md:pt-0">
-              <Truck className="h-10 w-10 text-accent" />
-              <h3 className="font-semibold text-lg">Frete Especializado</h3>
-              <p className="text-muted-foreground text-sm max-w-xs mx-auto">
-                Logística pesada com seguro de ponta a ponta para todo o Brasil.
-              </p>
+            <div className="mt-8 flex items-center gap-6 text-sm text-white/60">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-green-400" /> Financiamento BNDES
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-green-400" /> Instalação Inclusa
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Categories */}
-      <section className="py-20 container mx-auto px-4">
-        <div className="flex justify-between items-end mb-10">
-          <div>
-            <h2 className="text-3xl font-bold tracking-tight mb-2">Linhas de Equipamentos</h2>
-            <p className="text-muted-foreground">
-              Selecione a categoria para encontrar a máquina ideal.
+      {/* Problems Solved Section */}
+      <section className="py-20 bg-muted/30 border-b">
+        <div className="container mx-auto px-4">
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <h2 className="text-3xl font-bold tracking-tight mb-4">Conhecemos o Chão de Fábrica</h2>
+            <p className="text-muted-foreground text-lg">
+              As máquinas Robooster são projetadas para resolver os problemas reais do empresário
+              brasileiro.
             </p>
           </div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {categories.map((cat, i) => (
-            <Link
-              key={cat.id}
-              to={`/catalogo?cat=${cat.slug}`}
-              className={`group relative overflow-hidden rounded-xl aspect-[4/3] ${i === 0 ? 'md:col-span-2 lg:col-span-2 aspect-[21/9] md:aspect-auto' : ''}`}
-            >
-              <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors z-10" />
-              <img
-                src={cat.image}
-                alt={cat.name}
-                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-              />
-              <div className="absolute inset-0 z-20 p-8 flex flex-col justify-end">
-                <h3 className="text-2xl font-bold text-white mb-2">{cat.name}</h3>
-                <span className="text-accent flex items-center font-medium opacity-0 group-hover:opacity-100 transition-opacity translate-y-4 group-hover:translate-y-0 duration-300">
-                  Explorar <ArrowRight className="ml-2 h-4 w-4" />
-                </span>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-card p-8 rounded-xl border shadow-sm flex flex-col items-start">
+              <div className="h-12 w-12 bg-red-100 text-red-600 rounded-lg flex items-center justify-center mb-6">
+                <Factory className="h-6 w-6" />
               </div>
-            </Link>
-          ))}
+              <h3 className="text-xl font-bold mb-3">Falta de Mão de Obra</h3>
+              <p className="text-muted-foreground mb-4">
+                A automação CNC permite que um único operador faça o trabalho de três, com precisão
+                milimétrica e sem exaustão.
+              </p>
+            </div>
+            <div className="bg-card p-8 rounded-xl border shadow-sm flex flex-col items-start">
+              <div className="h-12 w-12 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center mb-6">
+                <TrendingUp className="h-6 w-6" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">Desperdício de Material</h3>
+              <p className="text-muted-foreground mb-4">
+                Softwares de nesting integrados otimizam o plano de corte, economizando até 25% de
+                MDF por projeto.
+              </p>
+            </div>
+            <div className="bg-card p-8 rounded-xl border shadow-sm flex flex-col items-start">
+              <div className="h-12 w-12 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center mb-6">
+                <Wrench className="h-6 w-6" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">Máquina Parada</h3>
+              <p className="text-muted-foreground mb-4">
+                Componentes industriais de alta durabilidade e suporte técnico nacional em até 48h.
+                Sua produção não pode parar.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Featured Products */}
-      <section className="py-20 bg-muted/20 border-t">
+      <section className="py-20">
         <div className="container mx-auto px-4">
-          <div className="flex justify-between items-end mb-10">
+          <div className="flex flex-col sm:flex-row justify-between items-end mb-10 gap-4">
             <div>
-              <h2 className="text-3xl font-bold tracking-tight mb-2">Destaques Robooster</h2>
+              <h2 className="text-3xl font-bold tracking-tight mb-2">
+                Máquinas de Alto Desempenho
+              </h2>
               <p className="text-muted-foreground">
-                As máquinas mais procuradas pelas indústrias este mês.
+                Equipamentos testados e aprovados pela indústria.
               </p>
             </div>
             <Link
               to="/catalogo"
-              className="hidden sm:flex text-primary font-medium hover:text-accent items-center"
+              className="text-primary font-semibold hover:text-accent flex items-center bg-muted/50 px-4 py-2 rounded-lg transition-colors"
             >
-              Ver todos <ArrowRight className="ml-1 h-4 w-4" />
+              Ver Catálogo Completo <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -147,16 +155,93 @@ export default function Index() {
           </div>
         </div>
       </section>
-    </div>
-  )
-}
 
-function Badge({ className, variant, children }: any) {
-  return (
-    <span
-      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${className}`}
-    >
-      {children}
-    </span>
+      {/* Proof / Success Cases Mini */}
+      <section className="py-20 bg-primary text-white">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-6">
+                Não acredite apenas na gente. Veja os resultados.
+              </h2>
+              <p className="text-lg text-white/80 mb-8">
+                Empresários pragmáticos exigem provas. Assista aos depoimentos de clientes que
+                transformaram suas fábricas com nosso maquinário.
+              </p>
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-center gap-3">
+                  <CheckCircle2 className="text-accent h-6 w-6" /> Retorno do investimento médio em
+                  8 a 14 meses
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle2 className="text-accent h-6 w-6" /> Redução drástica de devoluções
+                  por defeito de corte
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle2 className="text-accent h-6 w-6" /> Escalabilidade para pegar grandes
+                  licitações
+                </li>
+              </ul>
+              <Link to="/casos-de-sucesso">
+                <Button className="bg-white text-primary hover:bg-white/90 h-12 px-8 font-bold">
+                  Ler Casos de Sucesso
+                </Button>
+              </Link>
+            </div>
+            <div className="relative aspect-video bg-black rounded-xl overflow-hidden border border-white/10 group cursor-pointer">
+              <img
+                src="https://img.usecurling.com/p/800/450?q=factory+worker+interview"
+                alt="Depoimento"
+                className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700"
+              />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="h-16 w-16 bg-accent rounded-full flex items-center justify-center text-primary group-hover:scale-110 transition-transform shadow-lg">
+                  <Play className="h-6 w-6 ml-1" />
+                </div>
+              </div>
+              <div className="absolute bottom-6 left-6 right-6">
+                <div className="bg-black/60 backdrop-blur-sm p-4 rounded-lg border border-white/10">
+                  <p className="font-semibold italic text-sm">
+                    "Eu achava que CNC era coisa de gigante. Comprei a minha primeira e me arrependi
+                    de não ter feito isso há 5 anos."
+                  </p>
+                  <p className="text-accent text-xs mt-2 font-bold">
+                    — Carlos Oliveira, Marcenaria Costa
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Trust Badges */}
+      <section className="py-12 bg-background border-b">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div className="flex flex-col items-center gap-3">
+              <ShieldCheck className="h-10 w-10 text-primary opacity-80" />
+              <h3 className="font-bold text-sm">Garantia 2 Anos</h3>
+              <p className="text-muted-foreground text-xs">Proteção total de fábrica</p>
+            </div>
+            <div className="flex flex-col items-center gap-3">
+              <Wrench className="h-10 w-10 text-primary opacity-80" />
+              <h3 className="font-bold text-sm">Técnico Local</h3>
+              <p className="text-muted-foreground text-xs">Atendimento em até 48h</p>
+            </div>
+            <div className="flex flex-col items-center gap-3">
+              <Factory className="h-10 w-10 text-primary opacity-80" />
+              <h3 className="font-bold text-sm">Pronta Entrega</h3>
+              <p className="text-muted-foreground text-xs">Amplo estoque de peças</p>
+            </div>
+            <div className="flex flex-col items-center gap-3">
+              <TrendingUp className="h-10 w-10 text-primary opacity-80" />
+              <h3 className="font-bold text-sm">Financiamento B2B</h3>
+              <p className="text-muted-foreground text-xs">Taxas via BNDES/Finame</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
   )
 }

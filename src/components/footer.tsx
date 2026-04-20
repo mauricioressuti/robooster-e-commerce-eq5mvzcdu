@@ -62,8 +62,23 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-semibold text-lg mb-6">Suporte & Legal</h4>
+            <h4 className="font-semibold text-lg mb-6">Conteúdo & Suporte</h4>
             <ul className="flex flex-col gap-3 text-sm text-white/60">
+              <li>
+                <a href="/casos-de-sucesso" className="hover:text-accent transition-colors">
+                  Casos de Sucesso
+                </a>
+              </li>
+              <li>
+                <a href="/blog" className="hover:text-accent transition-colors">
+                  Blog Industrial
+                </a>
+              </li>
+              <li>
+                <a href="/contato" className="hover:text-accent transition-colors">
+                  Fale Conosco
+                </a>
+              </li>
               <li>
                 <a href="#" className="hover:text-accent transition-colors">
                   Assistência Técnica
@@ -71,22 +86,7 @@ export function Footer() {
               </li>
               <li>
                 <a href="#" className="hover:text-accent transition-colors">
-                  Manuais em PDF
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-accent transition-colors">
-                  Garantia
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-accent transition-colors">
-                  Política de Privacidade (LGPD)
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-accent transition-colors">
-                  Termos de Serviço
+                  Manuais e Garantia
                 </a>
               </li>
             </ul>
