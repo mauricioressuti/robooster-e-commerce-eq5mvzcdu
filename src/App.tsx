@@ -15,6 +15,7 @@ import NotFound from './pages/NotFound'
 import SuccessCases from './pages/SuccessCases'
 import Blog from './pages/Blog'
 import Contact from './pages/Contact'
+import AdminPage from './pages/Admin'
 
 const AppLayout = () => {
   const { user, loading } = useAuth()
@@ -55,6 +56,10 @@ const router = createBrowserRouter([
       {
         path: '/contato',
         element: <Contact />,
+      },
+      {
+        path: '/admin',
+        element: <AdminPage />,
       },
     ],
   },
