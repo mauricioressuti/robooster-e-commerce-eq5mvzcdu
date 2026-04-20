@@ -1,14 +1,19 @@
-/* General utility functions (exposes cn) */
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
-/**
- * Merges multiple class names into a single string
- * @param inputs - Array of class names
- * @returns Merged class names
- */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-// Add any other utility functions here
+export function formatCurrency(value: number, currency: 'BRL' | 'USD') {
+  return new Intl.NumberFormat(currency === 'BRL' ? 'pt-BR' : 'en-US', {
+    style: 'currency',
+    currency: currency,
+  }).format(value)
+}
+
+export function formatInstallments(value: number, currency: 'BRL' | 'USD') {
+  if (currency === 'USD') return ''
+  const installment = value / 12
+  return `em até 12x de ${formatCurrency(installment, 'BRL')} sem juros`
+}
