@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Toaster } from '@/components/ui/toaster'
 import { Toaster as Sonner } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -11,24 +11,42 @@ import ProductDetail from './pages/ProductDetail'
 import Checkout from './pages/Checkout'
 import NotFound from './pages/NotFound'
 
+const router = createBrowserRouter([
+  {
+    element: <Layout />,
+    children: [
+      {
+        path: '/',
+        element: <Index />,
+      },
+      {
+        path: '/catalogo',
+        element: <Catalog />,
+      },
+      {
+        path: '/produto/:id',
+        element: <ProductDetail />,
+      },
+      {
+        path: '/checkout',
+        element: <Checkout />,
+      },
+    ],
+  },
+  {
+    path: '*',
+    element: <NotFound />,
+  },
+])
+
 const App = () => (
-  <BrowserRouter future={{ v7_startTransition: false, v7_relativeSplatPath: false }}>
-    <AppProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <Routes>
-          <Route element={<Layout />}>
-            <Route path="/" element={<Index />} />
-            <Route path="/catalogo" element={<Catalog />} />
-            <Route path="/produto/:id" element={<ProductDetail />} />
-            <Route path="/checkout" element={<Checkout />} />
-          </Route>
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </TooltipProvider>
-    </AppProvider>
-  </BrowserRouter>
+  <AppProvider>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <RouterProvider router={router} />
+    </TooltipProvider>
+  </AppProvider>
 )
 
 export default App
